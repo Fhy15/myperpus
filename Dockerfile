@@ -28,7 +28,8 @@ WORKDIR /var/www/html
 
 # System deps and PHP extensions required by Laravel
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpng-dev libjpeg-dev libfreetype6-dev libzip-dev zip unzip git curl libonig-dev libxml2-dev \
+  libpng-dev libjpeg-dev libfreetype6-dev libzip-dev zip unzip git curl libonig-dev libxml2-dev \
+  default-libmysqlclient-dev default-mysql-client \
   && docker-php-ext-configure gd --with-freetype --with-jpeg \
   && docker-php-ext-install pdo pdo_mysql gd zip bcmath sockets opcache \
   && pecl install redis && docker-php-ext-enable redis \
