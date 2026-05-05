@@ -23,7 +23,7 @@ COPY . .
 RUN composer dump-autoload --optimize
 
 #### Final image: PHP runtime
-FROM php:8.2-cli-bullseye
+FROM php:8.4-cli-bullseye
 WORKDIR /var/www/html
 
 # System deps and PHP extensions required by Laravel
@@ -55,19 +55,6 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 
 ENV PORT 8080
 EXPOSE 8080
-exekudo@Kudo-T480:~/Project/myperpus_full$ composer audit
-npm audit --omit=dev
-php artisan test
-No security vulnerability advisories found.
-⚠️
-found 0 vulnerabilities
-
-In StreamHandler.php line 253:
-                                                                                                                 
-  There is no existing directory at "/var/www/html/storage/logs" and it could not be created: Permission denied  
-                                                                                                                 
-
 ENV APP_ENV=production
 ENV APP_DEBUG=false
-
 CMD ["start.sh"]
