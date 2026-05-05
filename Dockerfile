@@ -48,6 +48,15 @@ ENV COMPOSER_ALLOW_SUPERUSER=1
 COPY docker/start.sh /usr/local/bin/start.sh
 RUN chmod +x /usr/local/bin/start.sh
 
+
+RUN mkdir -p storage/framework/sessions \
+    storage/framework/views \
+    storage/framework/cache \
+    storage/logs \
+    bootstrap/cache
+
+RUN chmod -R 777 storage bootstrap/cache
+
 # File permissions for webserver user
 RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache || true
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache || true
