@@ -32,6 +32,26 @@ use Inertia\Inertia;
 // PUBLIC ROUTES
 // ============================================================
 
+// Health check endpoint for Railway monitoring
+Route::get('/health', function () {
+    try {
+        // Test DB connection
+        \DB::connection()->getPdo();
+        $dbStatus = 'OK';
+    } catch (Exception $e) {
+        $dbStatus = 'ERROR: ' . $e->getMessage();
+    }
+    
+    return response()->json([
+        'status' => 'OK',
+        'env' => app()->environment(),
+        'debug' => config('app.debug'),
+        'db' => $dbStatus,
+        'cache' => config('cache.default'),
+        'timestamp' => now()->toISOString()
+    ]);
+});
+
 Route::get('/', function () {
     if (auth()->check()) {
         $user = auth()->user();

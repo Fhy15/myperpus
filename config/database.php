@@ -8,7 +8,7 @@ return [
     'connections' => [
         'mysql' => [
             'driver'    => 'mysql',
-            'url'       => env('DB_URL'),
+            'url'       => env('DATABASE_URL', env('DB_URL')),
             'host'      => env('DB_HOST', '127.0.0.1'),
             'port'      => env('DB_PORT', '3306'),
             'database'  => env('DB_DATABASE', 'myperpus'),
