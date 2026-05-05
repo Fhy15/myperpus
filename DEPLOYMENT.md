@@ -30,6 +30,7 @@ npm ci
 npm run build
 ```
 
+
 ## 3. Database
 
 ```bash
@@ -42,11 +43,11 @@ Seeder production hanya membuat role dan admin dari `ADMIN_EMAIL`/`ADMIN_PASSWOR
 ## 4. Cache production
 
 ```bash
-php artisan optimize:clear
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-php artisan event:cache
+docker compose exec php php artisan optimize:clear
+docker compose exec php php artisan config:cache
+docker compose exec php php artisan route:cache
+docker compose exec php php artisan view:cache
+docker compose exec php php artisan event:cache
 ```
 
 ## 5. Storage dan permission
@@ -88,3 +89,19 @@ php artisan test
 ```
 
 Pastikan web server hanya mengarah ke folder `public`, HTTPS aktif, `.env` tidak ikut repository, dan `public/hot` tidak ada di server production.
+
+## Railway (Docker) notes
+
+If you deploy to Railway using the included `Dockerfile`, Railway will build the image using the Dockerfile steps. Key notes:
+
+- The Dockerfile performs a multi-stage build (node build, composer install, final PHP image). Use the repository Dockerfile and set Railway to deploy from Dockerfile.
+- Railway containers are ephemeral. Do not rely on local `storage` for long-term file persistence; configure `FILESYSTEM_DISK` to point to S3/Spaces if you need persistence.
+- Expose port `8080` in Railway service settings (the Dockerfile uses `PORT=8080`).
+- If build fails due to permissions or missing directories (e.g. errors creating `storage/logs`), ensure the Dockerfile creates `storage` directories before `composer install`. The Dockerfile in this repo already pre-creates `storage/logs` and sets permissive write mode during build to avoid such build-time failures.
+- If you prefer Railway to run migrations on first start, set environment variable `RUN_MIGRATIONS=true` (start script checks it). Be cautious: running migrations automatically in production may be undesirable without backups.
+
+Railway build troubleshooting tips:
+
+- If you see `composer` errors about running as root, it's usually a warning. The Dockerfile sets `COMPOSER_ALLOW_SUPERUSER=1` for the build stage to suppress plugin restrictions when necessary.
+- If `composer install` still fails during Railway build, capture the full build logs from Railway and search for the first error; often it's a missing PHP extension or permission on `storage` (both addressed by this Dockerfile).
+
