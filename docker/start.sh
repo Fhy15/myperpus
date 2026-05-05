@@ -37,7 +37,14 @@ if [ "${RUN_MIGRATIONS:-false}" = "true" ]; then
 
     if [ $i -lt $DB_RETRIES ]; then
       echo "Database available — running migrations and seeders"
-      php artisan migrate --force || true
+      if [ "${MIGRATE_FRESH:-false}" = "true" ]; then
+        echo "MIGRATE_FRESH=true — running migrate:fresh (will drop all tables)"
+        php artisan migrate:fresh --force || true
+      else
+        php artisan migrate --force || true
+      fi
+
+      # Seed the database (DatabaseSeeder may require ADMIN_EMAIL/ADMIN_PASSWORD in production)
       php artisan db:seed --force || true
     fi
   fi
