@@ -12,7 +12,7 @@ if [ -z "${DB_HOST:-}" ] && [ -n "${DATABASE_URL:-}" ]; then
 fi
 
 # Generate APP_KEY if missing or invalid in production
-if [ "${APP_ENV:-production}" = "production" ] && ( [ -z "${APP_KEY:-}" ] || [ ${#APP_KEY} -ne 44 ] || [ "${APP_KEY:0:7}" != "base64:" ] ); then
+if [ "${APP_ENV:-production}" = "production" ] && ( [ -z "${APP_KEY:-}" ] || [ "${APP_KEY:0:7}" != "base64:" ] || [ ${#APP_KEY} -ne 51 ] ); then
   echo "APP_KEY invalid or missing, generating new one..."
   export APP_KEY=$(php artisan key:generate --show --no-interaction --quiet)
   echo "New APP_KEY: ${APP_KEY:0:20}..."
@@ -86,3 +86,16 @@ fi
 
 # Start the Laravel development server (bind to $PORT for Railway)
 exec php artisan serve --host=0.0.0.0 --port="${PORT:-8080}"
+
+
+#!/bin/sh
+
+# 🔥 WAIT ENV READY
+php artisan config:clear
+php artisan cache:clear
+
+# 🔥 BARU CACHE SETELAH ENV MASUK
+php artisan config:cache
+
+# RUN SERVER
+php artisan serve --host=0.0.0.0 --port=${PORT}
